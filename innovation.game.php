@@ -2965,7 +2965,7 @@ class Innovation extends Table
                 break;
                 
             case 435: // Wealth: A total of 8 or more visible bonus icons
-                $eligible = count(self::boardVisibleBonuses($player_id)) >= 8;
+                $eligible = count(self::getBoardVisibleBonuses($player_id)) >= 8;
                 break;
             case 436: // Destiny: A total of 7 or more cards in forecast
                 $eligible = self::countCardsInLocation($player_id, 'forecast') >= 7;
@@ -4299,7 +4299,7 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
         /**
         Get the maximum visible bonus
         **/
-        return max(self::boardVisibleBonuses($player_id));
+        return max(self::getBoardVisibleBonuses($player_id));
     }
     
     function boardPileVisibleBonuses($player_id, $color) {
@@ -4356,11 +4356,14 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
     }
 
     
-    function boardVisibleBonuses($player_id) {
+    function getBoardVisibleBonuses($player_id) {
         $visible_bonus_icons = array();
         
         for($color=0; $color<5; $color++) {
-            $visible_bonus_icons[] = self::boardPileVisibleBonuses($player_id, $color);
+            $vis_icons = self::boardPileVisibleBonuses($player_id, $color);
+            foreach ($vis_icons as $vis_icon) {
+                $visible_bonus_icons[] = $vis_icon;
+            }
         
         }
         return $visible_bonus_icons;
@@ -7966,6 +7969,12 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 $message_for_player = clienttranslate('${You} must choose a color');
                 $message_for_others = clienttranslate('${player_name} must choose a color');
                 break;
+
+            // id 434, Echoes age 10: Sudoku
+            case "434N1A":
+                $message_for_player = clienttranslate('Choose a value');
+                $message_for_others = clienttranslate('${player_name} must choose a value');
+                break;
 				
             default:
                 // This should not happen
@@ -11513,6 +11522,11 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 if (self::getCardsInHand($player_id) > 0) {
                     $step_max = 1;
                 }
+                break;
+
+            // id 434, Echoes age 10: Sudoku
+            case "434N1":
+                $step_max = 1;
                 break;
                 
             default:
@@ -15931,6 +15945,19 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 'score_keyword' => true,
             );            
             break;
+
+        // id 434, Echoes age 10: Sudoku
+        case "434N1A":
+            // "Draw and meld a card of any value."
+            $options = array(
+                'player_id' => $player_id,
+                'n' => 1,
+                'can_pass' => false,
+                
+                'choose_value' => true,
+            );
+            break;
+
         
         default:
             // This should not happens
@@ -17556,6 +17583,25 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                         }
                     }
                     break;
+
+                // id 434, Echoes age 10: Sudoku
+                case "434N1A":
+                    // "Draw and meld a card of any value."
+                    $card = self::executeDraw($player_id, self::getAuxiliaryValue(), 'board');
+                    
+                    // "If you have at least nine different bonus values visible on your board, you win."
+                    $vis_bonuses = array_unique(self::getBoardVisibleBonuses($player_id));
+                    if (count($vis_bonuses) >= 9) {
+                        self::notifyPlayer($player_id, 'log', clienttranslate('${You} have at least nine unique bonues.'), array('You' => 'You'));
+                        self::notifyAllPlayersBut($player_id, 'log', clienttranslate('${player_name} has at least nine unique bonuses.'), array('player_name' => self::getColoredText(self::getPlayerNameFromId($player_id), $player_id)));
+                        self::setGameStateValue('winner_by_dogma', $player_id); // "You win"
+                        self::trace('EOG bubbled from self::stPlayerInvolvedTurn Sudoku');
+                        throw new EndOfGame();                
+                    }
+                    // "Execute each of the melded card's non-demand dogma effects. Do not share them."
+                    self::executeNonDemandEffects($card);
+                    
+                    break;
                     
                 }
                 
@@ -18217,6 +18263,13 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
             case "336N1A":
                 self::notifyPlayer($player_id, 'log', clienttranslate('${You} choose ${color}.'), array('i18n' => array('color'), 'You' => 'You', 'color' => self::getColorInClear($choice)));
                 self::notifyAllPlayersBut($player_id, 'log', clienttranslate('${player_name} chooses ${color}.'), array('i18n' => array('color'), 'player_name' => self::getColoredText(self::getPlayerNameFromId($player_id), $player_id), 'color' => self::getColorInClear($choice)));
+                self::setAuxiliaryValue($choice);
+                break;
+
+            // id 434, Echoes age 10: Sudoku
+            case "434N1A":
+                self::notifyPlayer($player_id, 'log', clienttranslate('${You} choose the value ${age}.'), array('You' => 'You', 'age' => self::getAgeSquare($choice)));
+                self::notifyAllPlayersBut($player_id, 'log', clienttranslate('${player_name} chooses the value ${age}.'), array('player_name' => self::getColoredText(self::getPlayerNameFromId($player_id), $player_id), 'age' => self::getAgeSquare($choice)));
                 self::setAuxiliaryValue($choice);
                 break;
                                 

@@ -420,7 +420,11 @@ INSERT INTO `card` (`id`, `type`, `age`, `color`, `spot_1`, `spot_2`, `spot_3`, 
 (336, 3, 1, 2,  4,  4,  2,  0, 4, 'removed'),
 (340, 3, 1, 3,  4,  0,  4,101, 4, 'removed'),
 (342, 3, 1, 4,  4,  0,  4, 10, 4, 'removed'),
-(344, 3, 1, 4,  0,  4,103,  4, 4, 'removed');
+(344, 3, 1, 4,  0,  4,103,  4, 4, 'removed'),
+
+
+/* Echoes - Age 10 */
+(434, 3,10, 4,  3,  0,  3,111, 3, 'removed');
 
 
 /* Insert Cities cards */
