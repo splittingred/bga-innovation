@@ -6667,6 +6667,13 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
             self::transferCardFromTo($achievement, $player_id, 'achievements');
         }
     }
+    
+    function getAchievementEligibility($player_id, $age) {
+        $cards = self::getCardsInLocationKeyedByAge($player_id, 'achievements');
+        
+        return (self::getPlayerScore($player_id) > (5 * count($cards[$age] + 1)));
+    }
+    
     /* Returns true if a relic is being seized */
     function tryToDigArtifactAndSeizeRelic($player_id, $previous_top_card, $melded_card) {
         // The Artifacts expansion is not enabled.
@@ -7963,6 +7970,12 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
 
             // id 336, Echoes age 1: Comb
             case "336N1A":
+                $message_for_player = clienttranslate('${You} must choose a color');
+                $message_for_others = clienttranslate('${player_name} must choose a color');
+                break;
+
+            // id 341, Echoes age 1: Soap
+            case "341N1A":
                 $message_for_player = clienttranslate('${You} must choose a color');
                 $message_for_others = clienttranslate('${player_name} must choose a color');
                 break;
@@ -11448,6 +11461,51 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 }
                 break;
 
+            // id 331, Echoes age 1: Perfume
+            case "331D1":
+                // Find all colors with ages that are on the player's board, but not on the launcher's board
+                $colors = array();
+                for ($color = 0; $color < 5; $color++) {
+                    $player_top_card = self::getTopCardOnBoard($player_id, $color);
+                    if ($player_top_card == null) {
+                        continue;
+                    }
+                    $age_found = false;
+                    for ($color2 = 0; $color2 < 5; $color2++) {
+                        $launcher_top_card = self::getTopCardOnBoard($launcher_id, $color2);
+                        if ($launcher_top_card == null) {
+                            continue;
+                        }
+                        
+                        if ($player_top_card['faceup_age'] == $launcher_top_card['faceup_age']) {
+                            $age_found = true;
+                        }
+                    }
+                    if ($age_found == false) {
+                        $colors[] = $color;
+                    }
+                }
+                
+                if (count($colors) > 0) {
+                    $step_max = 1;
+                    self::setAuxiliaryValueFromArray($colors);
+                }
+                else {
+                    self::notifyGeneralInfo(clienttranslate('All faceup ages are identical.  No transfer will occur.'));
+                }
+                break;
+
+            case "331E1":
+                // "Draw and tuck a 1."
+                self::executeDrawAndTuck($player_id, 1);
+                break;
+                
+            // id 332, Echoes age 1: Ruler
+            case "332E1":
+                // "Draw a 2."
+                self::executeDraw($player_id, 2, 'hand');
+                break;            
+            
             // id 333, Echoes age 1: Bangle
             case "333N1":
                 //  "Draw and foreshadow a 3"
@@ -11457,7 +11515,40 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
             case "333E1":
                 $step_max = 1;
                 break;
-            
+
+            // id 334, Echoes age 1: Candles
+            case "334D1":
+                $has_card_with_tower = false;
+                foreach (self::getCardsInLocation($player_id, 'hand') as $card) {
+                    if (self::hasRessource($card, 4 /* tower */)) {
+                        $has_card_with_tower = true;
+                        break;
+                    }
+                }
+                if ($has_card_with_tower) {
+                    $step_max = 1;
+                } else {
+                    self::revealHand($player_id);
+                    self::notifyPlayer($player_id, 'log', clienttranslate('${You} have no cards with a ${tower} in your hand.'), array('You' => 'You', 'tower' => $tower));
+                    self::notifyAllPlayersBut($player_id, 'log', clienttranslate('${player_name} has no cards with a ${tower} in his hand.'), array('player_name' => self::getColoredText(self::getPlayerNameFromId($player_id), $player_id), 'tower' => $tower));
+                }
+                break;
+
+            case "334E1":
+                // "If every other player has a higher score than you, draw a 3."
+                $player_ids = self::getActivePlayerIds();
+                $player_score = self::getPlayerScore($player_id);
+                $min_score = true;
+                foreach ($player_ids as $p_id) {
+                    if ($player_id != $p_id && $player_score >= self::getPlayerScore($p_id)) {
+                        $min_score = false;
+                    }
+                }
+                if ($min_score) {
+                    self::executeDraw($player_id, 3, 'hand');
+                }
+                break;
+                
             // id 336, Echoes age 1: Comb
             case "336N1":
                 $step_max = 2;
@@ -11500,6 +11591,13 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                             self::scoreCard($card, $player_id);
                         }
                     }
+                }
+                break;
+
+            // id 341, Echoes age 1: Soap
+            case "341N1":
+                if (self::getCardsInHand($player_id) > 0) {
+                    $step_max = 2;
                 }
                 break;
 
@@ -15872,6 +15970,26 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
             );
             break;
             
+        //
+        // Echoes Expansion
+        //        
+        // id 331, Echoes age 1: Perfume
+        case "331D1A":
+            // "I demand you transfer a top card of different value from any top card on my board from your board to mine! "
+            $options = array(
+                'player_id' => $player_id,
+                'n' => 1,
+                'can_pass' => false,
+                
+                'color' => self::getAuxiliaryValueAsArray(),
+                
+                'owner_from' => $player_id,
+                'location_from' => 'board',
+                'owner_to' => $launcher_id,
+                'location_to' => 'board'
+            );
+            break;
+
         // id 333, Echoes age 1: Bangle
         // TODO(ECHOES): Test this.
         case "333E1A":
@@ -15890,6 +16008,23 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
             );
             break;
         
+        // 334, Echoes age 1: Candles
+        case "334D1A":
+            // "you transfer a card with a castle from your hand to my hand!"
+            $options = array(
+                'player_id' => $player_id,
+                'n' => 1,
+                'can_pass' => false,
+                
+                'owner_from' => $player_id,
+                'location_from' => 'hand',
+                'owner_to' => $launcher_id,
+                'location_to' => 'hand',
+                
+                'with_icon' => 4 /* tower */
+            );
+            break;
+
         // id 336, Echoes age 1: Comb
         case "336N1A":
             // "Choose a color"
@@ -15913,7 +16048,52 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 'location_to' => 'deck',
             );
             break;
+
+        // id 341, Echoes age 1: Soap
+        case "341N1A":
+            // "Choose a color"
+            $options = array(
+                'player_id' => $player_id,
+                'can_pass' => false,
+
+                'choose_color' => true,
+            );
+            break;
+
+        case "341N1B":
+            // "You may tuck any number of cards of that color from your hand."
+            $options = array(
+                'player_id' => $player_id,
+                'n_min' => 1,
+                'can_pass' => true,
+                
+                'color' => array(self::getAuxiliaryValue()),
+                
+                'owner_from' => $player_id,
+                'location_from' => 'hand',
+                'owner_to' => $player_id,
+                'location_to' => 'board',
+                
+                'bottom_to' => true
+            );
+            break;
         
+        case "341N1C":
+            // "you may achieve (if eligible) a card from your hand."
+            $options = array(
+                'player_id' => $player_id,
+                'n' => 1,
+                'can_pass' => true,
+                
+                'owner_from' => $player_id,
+                'location_from' => 'hand',
+                'owner_to' => $player_id,
+                'location_to' => 'achievements',
+
+                'require_achievement_eligibility' => true
+            );
+            break;
+            
         // id 342, Echoes age 1: Bell
         case "342E1A":
             // "You may score a card from your hand"
@@ -17540,6 +17720,22 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                         }
                     }
                     break;
+
+                // id 331, Echoes age 1: Perfume
+                case "331D1A":
+                    // "If you do, draw and meld a card of equal value!"
+                    if ($n > 0) {
+                        self::executeDraw($player_id, self::getGameStateValue('age_last_selected'), 'board');
+                    }
+                    break;
+
+                // id 334, Echoes age 1: Candles
+                case "334D1A":
+                    // "If you do, draw a 1!"
+                    if ($n > 0) {
+                        self::executeDraw($player_id, 1, 'hand');
+                    }
+                    break;
                 
                 // id 336, Echoes age 1: Comb
                 case "336N1A":
@@ -17556,7 +17752,14 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                         }
                     }
                     break;
-                    
+
+                // id 341, Echoes age 1: Soap
+                case "341N1B":
+                    // "If you tucked at least three,"
+                    if ($n >= 3) {
+                        self::incrementStepMax(1); // select a card
+                    }
+                    break;                    
                 }
                 
             //[DD]||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -18215,6 +18418,13 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
 
             // id 336, Echoes age 1: Comb
             case "336N1A":
+                self::notifyPlayer($player_id, 'log', clienttranslate('${You} choose ${color}.'), array('i18n' => array('color'), 'You' => 'You', 'color' => self::getColorInClear($choice)));
+                self::notifyAllPlayersBut($player_id, 'log', clienttranslate('${player_name} chooses ${color}.'), array('i18n' => array('color'), 'player_name' => self::getColoredText(self::getPlayerNameFromId($player_id), $player_id), 'color' => self::getColorInClear($choice)));
+                self::setAuxiliaryValue($choice);
+                break;
+
+            // id 341, Echoes age 1: Soap
+            case "341N1A":
                 self::notifyPlayer($player_id, 'log', clienttranslate('${You} choose ${color}.'), array('i18n' => array('color'), 'You' => 'You', 'color' => self::getColorInClear($choice)));
                 self::notifyAllPlayersBut($player_id, 'log', clienttranslate('${player_name} chooses ${color}.'), array('i18n' => array('color'), 'player_name' => self::getColoredText(self::getPlayerNameFromId($player_id), $player_id), 'color' => self::getColorInClear($choice)));
                 self::setAuxiliaryValue($choice);
