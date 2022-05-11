@@ -2,13 +2,13 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * Innovation implementation : © Jean Portemer <jportemer@gmail.com>
+ * Innovationsplittingred implementation : © Jean Portemer <jportemer@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
  *
- * innovation.view.php
+ * innovationsplittingred.view.php
  *
  * This is your "view" file.
  *
@@ -17,7 +17,7 @@
  * _ when a player refreshes the game page (F5)
  *
  * "build_page" method allows you to dynamically modify the HTML generated for the game interface. In
- * particular, you can set here the values of variables elements defined in innovation_innovation.tpl (elements
+ * particular, you can set here the values of variables elements defined in innovationsplittingred_innovationsplittingred.tpl (elements
  * like {MY_VARIABLE_ELEMENT}), and insert HTML block elements (also defined in your HTML template file)
  *
  * Note: if the HTML of your game interface is always the same, you don't have to place anything here.
@@ -26,10 +26,10 @@
   
   require_once( APP_BASE_PATH."view/common/game.view.php" );
   
-  class view_innovation_innovation extends game_view
+  class view_innovationsplittingred_innovationsplittingred extends game_view
   {
     function getGameName() {
-        return "innovation";
+        return "innovationsplittingred";
     }
     
     function hex2rgb($hex) {
@@ -59,16 +59,16 @@
 
         /*********** Place your code below:  ************/
 
-        $this->page->begin_block( "innovation_innovation", "pile" );
-        $this->page->begin_block( "innovation_innovation", "player" );
-        $this->page->begin_block( "innovation_innovation", "decks_group_1" );
-        $this->page->begin_block( "innovation_innovation", "decks_group_2" );
-        $this->page->begin_block( "innovation_innovation", "decks_group_3" );
-        $this->page->begin_block( "innovation_innovation", "decks_group_4" );
-        $this->page->begin_block( "innovation_innovation", "decks" );
-        $this->page->begin_block( "innovation_innovation", "available_relics" );
-        $this->page->begin_block( "innovation_innovation", "available_achievements" );
-        $this->page->begin_block( "innovation_innovation", "special_achievements" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "pile" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "player" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "decks_group_1" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "decks_group_2" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "decks_group_3" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "decks_group_4" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "decks" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "available_relics" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "available_achievements" );
+        $this->page->begin_block( "innovationsplittingred_innovationsplittingred", "special_achievements" );
         
         // Players
         // Me

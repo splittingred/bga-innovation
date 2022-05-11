@@ -2,13 +2,13 @@
  /**
   *------
   * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
-  * Innovation implementation : © Jean Portemer <jportemer@gmail.com>
+  * Innovationsplittingred implementation : © Jean Portemer <jportemer@gmail.com>
   * 
   * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
   * See http://en.boardgamearena.com/#!doc/Studio for more information.
   * -----
   * 
-  * innovation.game.php
+  * innovationsplittingred.game.php
   *
   * This is the main file for your game logic.
   *
@@ -18,11 +18,12 @@
 
 
 require_once(APP_GAMEMODULE_PATH.'module/table/table.game.php');
+require_once('modules/Innovation/Utils/Strings.php');
 
 /* Exception to be called when the game must end */
 class EndOfGame extends Exception {}
 
-class Innovation extends Table
+class Innovationsplittingred extends Table
 {
     function __construct()
     {
@@ -32,7 +33,8 @@ class Innovation extends Table
         //  If your game has options (variants), you also have to associate here a label to
         //  the corresponding ID in gameoptions.inc.php.
         // Note: afterwards, you can get/set the global variables with getGameStateValue/setGameStateInitialValue/setGameStateValue
-        parent::__construct();self::initGameStateLabels(array(
+        parent::__construct();
+        self::initGameStateLabels(array(
             'number_of_achievements_needed_to_win' => 10,
             'turn0' => 11,
             'first_player_with_only_one_action' => 12,
@@ -124,7 +126,7 @@ class Innovation extends Table
     
     protected function getGameName()
     {
-        return "innovation";
+        return "innovationsplittingred";
     }
 
     function upgradeTableDb($from_version) {
@@ -2842,7 +2844,7 @@ class Innovation extends Table
             $achievement = self::getCardInfo($achievement_id);
 
             // Check if it's already been claimed or if it's removed from the game.
-            if ($achievement['owner'] != 0 || $achievement['location'] = 'removed') {
+            if ($achievement['owner'] != 0 || $achievement['location'] == 'removed') {
                 continue;
             }
             
@@ -3468,11 +3470,18 @@ class Innovation extends Table
         return $card_list;
     }
 
-    function comesAlphabeticallyBefore($card_1, $card_2) {
-        /**
-            Returns true if card_1 comes before card_2 in English alphabetical order.
-        **/
-        return strcasecmp(self::getCardName($card_1['id']), self::getCardName($card_2['id'])) < 0;
+    /**
+     * Returns true if card_1 comes before card_2 in English alphabetical order.
+     *
+     * @param array $card1
+     * @param array $card2
+     * @return bool
+     */
+    public function comesAlphabeticallyBefore($card1, $card2) : bool
+    {
+        $name1 = $this->getCardName($card1['id']);
+        $name2 = $this->getCardName($card2['id']);
+        return \Innovation\Utils\Strings::doesStringComeBefore($name1, $name2);
     }
     
     function getColorsOfRepeatedValueOfTopCardsOnBoard($player_id) {
@@ -7155,7 +7164,7 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
             case 71: // Refrigeration
             case 72: // Sanitation
                 // These cards have no effect if all players have empty hands.
-                foreach (array_merge($non_demand_players, $i_demand_players) as $player_id) {
+                foreach (self::getAllActivePlayerIds() as $player_id) {
                     if (self::countCardsInLocation($player_id, 'hand') > 0) {
                         return false;
                     }
@@ -7175,7 +7184,6 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 return true;
         
             case 41: // Anatomy
-            case 76: // Rocketry
             case 99: // Databases
                 // These cards have no effect if all players executing the demand have empty score piles.
                 foreach ($i_demand_players as $player_id) {
@@ -7186,8 +7194,9 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 return true;
 
             case 32: // Medicine
+            case 76: // Rocketry
                 // The card has no effect if all players have empty score piles.
-                foreach (array_merge($non_demand_players, $i_demand_players) as $player_id) {
+                foreach (self::getAllActivePlayerIds() as $player_id) {
                     if (self::countCardsInLocation($player_id, 'score') > 0) {
                         return false;
                     }
@@ -13812,18 +13821,6 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
             break;
 
         case "134N1B":
-            // Prompt player to pick a stack which to splay left. (no purple card to execute)
-            $options = array(
-                'player_id' => $player_id,
-                'n' => 1,
-                'can_pass' => false,
-                
-                'owner_from' => 'any player',
-                'location_from' => 'board',
-                'location_to' => 'none'
-            );
-            break;
-            
         case "134N1+A":
             // Prompt player to pick a stack which to splay left.
             $options = array(
@@ -13833,7 +13830,7 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 
                 'owner_from' => 'any player',
                 'location_from' => 'board',
-                'location_to' => 'none'
+                'location_to' => 'none',
             );
             break;
             
@@ -16318,11 +16315,11 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
                 // id 134, Artifacts age 2: Cyrus Cylinder
                 case "134N1A":
                     // "Execute its non-demand dogma effects"
-                    if ($n > 0) {
-                        self::executeNonDemandEffects(self::getCardInfo(self::getGameStateValue('id_last_selected')));
-                    }
-                    else {
-                        self::incrementStepMax(1); // still need to do the splay
+                    $card_id = self::getGameStateValue('id_last_selected');
+                    if ($n > 0 && self::getNonDemandEffect($card_id, 1) != null) {
+                        self::executeNonDemandEffects(self::getCardInfo($card_id));
+                    } else {
+                        self::incrementStepMax(1); // Still need to do the splay
                     }
                     break;
 
@@ -17888,4 +17885,3 @@ function getOwnersOfTopCardWithColorAndAge($color, $age) {
         ", array('player_id' => $player_id)));
     }
 }
-

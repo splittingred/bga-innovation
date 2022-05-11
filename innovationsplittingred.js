@@ -1,13 +1,13 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * Innovation implementation : © Jean Portemer <jportemer@gmail.com>
+ * Innovationsplittingred implementation : © Jean Portemer <jportemer@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
  *
- * innovation.js
+ * innovationsplittingred.js
  *
  * Innovation user interface script
  * 
@@ -22,7 +22,7 @@ define([
     "ebg/zone"
 ],
 function (dojo, declare) {
-    return declare("bgagame.innovation", ebg.core.gamegui, {
+    return declare("bgagame.innovationsplittingred", ebg.core.gamegui, {
         constructor: function(){
             console.log('innovation constructor');
               
@@ -129,7 +129,7 @@ function (dojo, declare) {
         debug_draw: function() {
             var debug_card_list = document.getElementById("debug_card_list");
             self = this;
-            this.ajaxcall("/innovation/innovation/debug_draw.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/debug_draw.html",
                 {
                     lock: true,
                     card_id: debug_card_list.selectedIndex
@@ -140,7 +140,7 @@ function (dojo, declare) {
         debug_meld: function() {
             var debug_card_list = document.getElementById("debug_card_list");
             self = this;
-            this.ajaxcall("/innovation/innovation/debug_meld.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/debug_meld.html",
                 {
                     lock: true,
                     card_id: debug_card_list.selectedIndex
@@ -151,7 +151,7 @@ function (dojo, declare) {
         debug_score: function () {
             var debug_card_list = document.getElementById("debug_card_list");
             self = this;
-            this.ajaxcall("/innovation/innovation/debug_score.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/debug_score.html",
                 {
                     lock: true,
                     card_id: debug_card_list.selectedIndex
@@ -162,7 +162,7 @@ function (dojo, declare) {
         debug_achieve: function () {
             var debug_card_list = document.getElementById("debug_card_list");
             self = this;
-            this.ajaxcall("/innovation/innovation/debug_achieve.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/debug_achieve.html",
                 {
                     lock: true,
                     card_id: debug_card_list.selectedIndex
@@ -173,7 +173,7 @@ function (dojo, declare) {
         debug_return: function () {
             var debug_card_list = document.getElementById("debug_card_list");
             self = this;
-            this.ajaxcall("/innovation/innovation/debug_return.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/debug_return.html",
                 {
                     lock: true,
                     card_id: debug_card_list.selectedIndex
@@ -184,7 +184,7 @@ function (dojo, declare) {
         debug_topdeck: function () {
             var debug_card_list = document.getElementById("debug_card_list");
             self = this;
-            this.ajaxcall("/innovation/innovation/debug_topdeck.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/debug_topdeck.html",
                 {
                     lock: true,
                     card_id: debug_card_list.selectedIndex
@@ -195,7 +195,7 @@ function (dojo, declare) {
         debug_dig: function () {
             var debug_card_list = document.getElementById("debug_card_list");
             self = this;
-            this.ajaxcall("/innovation/innovation/debug_dig.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/debug_dig.html",
                 {
                     lock: true,
                     card_id: debug_card_list.selectedIndex
@@ -2462,7 +2462,7 @@ function (dojo, declare) {
             this.on(cards_in_hand, 'onclick', 'action_clickForUpdatedInitialMeld');
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/initialMeld.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/initialMeld.html",
                             {
                                 lock: true,
                                 card_id: card_id
@@ -2482,7 +2482,7 @@ function (dojo, declare) {
             dojo.addClass(HTML_id, "selected");
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/updateInitialMeld.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/updateInitialMeld.html",
                             {
                                 lock: true,
                                 card_id: card_id
@@ -2497,7 +2497,7 @@ function (dojo, declare) {
             }
             this.deactivateClickEvents();
             var self = this;
-            this.ajaxcall("/innovation/innovation/seizeRelicToHand.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/seizeRelicToHand.html",
                             {
                                 lock: true
                             },
@@ -2511,7 +2511,7 @@ function (dojo, declare) {
             }
             this.deactivateClickEvents();
             var self = this;
-            this.ajaxcall("/innovation/innovation/seizeRelicToAchievements.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/seizeRelicToAchievements.html",
                             {
                                 lock: true
                             },
@@ -2525,7 +2525,7 @@ function (dojo, declare) {
             }
             this.deactivateClickEvents();
             var self = this;
-            this.ajaxcall("/innovation/innovation/passSeizeRelic.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/passSeizeRelic.html",
                             {
                                 lock: true
                             },
@@ -2539,7 +2539,7 @@ function (dojo, declare) {
             }
             this.deactivateClickEvents();
             var self = this;
-            this.ajaxcall("/innovation/innovation/dogmaArtifactOnDisplay.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/dogmaArtifactOnDisplay.html",
                             {
                                 lock: true
                             },
@@ -2553,7 +2553,7 @@ function (dojo, declare) {
             }
             this.deactivateClickEvents();
             var self = this;
-            this.ajaxcall("/innovation/innovation/returnArtifactOnDisplay.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/returnArtifactOnDisplay.html",
                             {
                                 lock: true
                             },
@@ -2567,7 +2567,7 @@ function (dojo, declare) {
             }
             this.deactivateClickEvents();
             var self = this;
-            this.ajaxcall("/innovation/innovation/passArtifactOnDisplay.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/passArtifactOnDisplay.html",
                             {
                                 lock: true
                             },
@@ -2590,7 +2590,7 @@ function (dojo, declare) {
             }
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/achieve.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/achieve.html",
                             {
                                 lock: true,
                                 age: age
@@ -2606,7 +2606,7 @@ function (dojo, declare) {
             this.deactivateClickEvents();
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/draw.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/draw.html",
                             {
                                 lock: true,
                             },
@@ -2675,7 +2675,7 @@ function (dojo, declare) {
             dojo.destroy("meld_confirm_button");
 
             var card_id = this.getCardIdFromHTMLId(HTML_id);
-            this.ajaxcall("/innovation/innovation/meld.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/meld.html",
                 {
                     lock: true,
                     card_id: card_id
@@ -2755,7 +2755,7 @@ function (dojo, declare) {
             dojo.destroy("dogma_confirm_button");
 
             var card_id = this.getCardIdFromHTMLId(HTML_id);
-            this.ajaxcall("/innovation/innovation/dogma.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/dogma.html",
                 {
                     lock: true,
                     card_id: card_id
@@ -2780,7 +2780,7 @@ function (dojo, declare) {
             var card_id = this.getCardIdFromHTMLId(HTML_id);
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/choose.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/choose.html",
                             {
                                 lock: true,
                                 card_id: card_id
@@ -2815,7 +2815,7 @@ function (dojo, declare) {
             var position = this.getCardPositionFromId(zone, card_id, age, type, is_relic);
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/chooseRecto.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/chooseRecto.html",
                             {
                                 lock: true,
                                 owner: owner,
@@ -2875,7 +2875,7 @@ function (dojo, declare) {
             this.deactivateClickEvents();
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/chooseSpecialOption.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/chooseSpecialOption.html",
                             {
                                 lock: true,
                                 choice: choice
@@ -2907,7 +2907,7 @@ function (dojo, declare) {
                 
             this.deactivateClickEvents();
             var self = this;
-            this.ajaxcall("/innovation/innovation/choose.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/choose.html",
                             {
                                 lock: true,
                                 card_id: -1
@@ -2925,7 +2925,7 @@ function (dojo, declare) {
             var HTML_id = this.getCardHTMLIdFromEvent(event);
             var color = HTML_id.substr(6)
             var self = this;
-            this.ajaxcall("/innovation/innovation/choose.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/choose.html",
                             {
                                 lock: true,
                                 card_id: this.getCardIdFromHTMLId(this.zone.board[this.player_id][color].items[0].id) // A choose for splay is equivalent as selecting a board card of the right color, by design
@@ -2963,7 +2963,7 @@ function (dojo, declare) {
             this.deactivateClickEvents();
             
             var self = this;
-            this.ajaxcall("/innovation/innovation/publicationRearrange.html",
+            this.ajaxcall("/innovationsplittingred/innovationsplittingred/publicationRearrange.html",
                             {
                                 lock: true,
                                 color: permuted_color,
@@ -3185,7 +3185,7 @@ function (dojo, declare) {
             
             if (!this.isSpectator) {
                 // Inform the server of this change to make it by default if the player refreshes the page
-                this.ajaxcall("/innovation/innovation/updateDisplayMode.html",
+                this.ajaxcall("/innovationsplittingred/innovationsplittingred/updateDisplayMode.html",
                             {
                                 lock: true,
                                 display_mode: this.display_mode
@@ -3215,7 +3215,7 @@ function (dojo, declare) {
             
             if (!this.isSpectator) {
                 // Inform the server of this change to make it by default if the player refreshes the page
-                this.ajaxcall("/innovation/innovation/updateViewFull.html",
+                this.ajaxcall("/innovationsplittingred/innovationsplittingred/updateViewFull.html",
                             {
                                 lock: true,
                                 view_full: this.view_full
